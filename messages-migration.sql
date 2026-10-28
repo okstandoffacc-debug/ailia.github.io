@@ -62,3 +62,21 @@ alter table public.push_subscriptions enable row level security;
 drop policy if exists "users manage own push subscriptions" on public.push_subscriptions;
 create policy "users manage own push subscriptions" on public.push_subscriptions for all to authenticated
 using (user_id=auth.uid()) with check (user_id=auth.uid());
+
+-- Явно выдаём права authenticated; доступ всё равно ограничен RLS-политиками выше.
+grant select, insert, update on public.conversations to authenticated;
+grant select, insert, update on public.messages to authenticated;
+grant select, insert, update, delete on public.push_subscriptions to authenticated;
+
+-- Добавляем таблицу сообщений в realtime, если она ещё не опубликована.
+do $$
+begin
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'messages'
+  ) then
+    alter publication supabase_realtime add table public.messages;
+  end if;
+exception when undefined_object then
+  raise notice 'Publication supabase_realtime не найдена; включите Realtime вручную в Supabase.';
+end $$;
