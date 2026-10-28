@@ -23,6 +23,7 @@
                 <div class="header-actions">
                     <a href="#cart" id="cart-btn" class="btn-phone"><i class="fas fa-shopping-cart"></i> Корзина</a>
                     <a href="#lk" class="btn-phone" style="margin-left: 10px;"><i class="fas fa-user"></i> ЛК</a>
+                    <button type="button" class="btn-phone" id="auth-open" style="margin-left: 10px;">Войти / Регистрация</button>
                 </div>
             </div>
         </div>
@@ -428,7 +429,7 @@
       <label for="auth-password">Пароль</label>
       <div class="password-field">
         <input id="auth-password" type="password" minlength="8" autocomplete="current-password" required>
-        <button type="button" id="auth-password-toggle" class="password-toggle" aria-label="Показать пароль" aria-pressed="false" title="Показать пароль">Показать</button>
+        <button type="button" id="auth-password-toggle" class="password-toggle" aria-label="Показать пароль" aria-pressed="false" title="Показать пароль"><i class="fa-solid fa-eye" aria-hidden="true"></i></button>
       </div>
       <p id="auth-message" class="auth-message" role="status"></p>
       <button type="submit" class="auth-submit" id="auth-submit">Войти</button>
