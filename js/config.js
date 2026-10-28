@@ -8,3 +8,6 @@ window.SUPABASE_CONFIG = {
     url: "https://qxaokgxjahojcqevlwhb.supabase.co",
     anonKey: "sb_publishable_gNUx4ovkW2vxzSJ16UTRtw_2AANsvWv"
 };
+
+// Для push-уведомлений вставьте VAPID PUBLIC KEY после настройки Supabase Edge Function.
+window.PUSH_CONFIG = { vapidPublicKey: "" };

@@ -8,7 +8,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="css/style.css">
+<link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#26372e">
+    <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/auth.css">
     <link rel="stylesheet" href="css/profile.css">
 </head>
@@ -139,7 +141,7 @@
             </div>
 
             <div class="social-links">
-                <a href="https://wa.me/+79046334595" target="_blank" rel="noopener" class="social-link">WhatsApp</a>
+                <button type="button" class="social-link" onclick="openShopChat()">Сообщения на сайте</button>
                 
                 <a href="https://www.avito.ru/user/39b1f3f161f1355a0778e101989f1a3f/profile/all/kollektsionirovanie?id=8213894410&iid=8213894410&page_from=from_item_messenger&src=messenger&sellerId=39b1f3f161f1355a0778e101989f1a3f" class="social-link" target="_blank" style="background-color: #2f4a3f; border-color: #2f4a3f;">Avito</a>
             </div>
@@ -445,6 +447,7 @@
 <script src="js/catalog.js" defer></script>
 <script src="js/app.js" defer></script>
 <script src="js/pages.js" defer></script>
+<script src="js/messages.js" defer></script>
 <script src="js/account-admin.js" defer></script>
 <script src="js/animations.js" defer></script>
 </body>

@@ -1,0 +1,11 @@
+{
+  "name": "Старинная Коллекция",
+  "short_name": "Антиквариат",
+  "description": "Антикварный магазин и сообщения с продавцом",
+  "start_url": "./#shop",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f8f5ed",
+  "theme_color": "#26372e",
+  "icons": [{"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
