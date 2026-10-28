@@ -80,3 +80,38 @@ begin
 exception when undefined_object then
   raise notice 'Publication supabase_realtime не найдена; включите Realtime вручную в Supabase.';
 end $$;
+
+-- Вложения (фото) в переписке. Можно безопасно повторно выполнять этот блок.
+alter table public.messages add column if not exists attachment_path text;
+alter table public.messages add column if not exists attachment_type text;
+
+-- Приватный bucket: фото доступны только участникам переписки и администратору.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('chat-attachments', 'chat-attachments', false, 8388608, array['image/jpeg','image/png','image/webp','image/gif','image/avif'])
+on conflict (id) do update set public=false, file_size_limit=8388608,
+  allowed_mime_types=array['image/jpeg','image/png','image/webp','image/gif','image/avif'];
+
+drop policy if exists "chat photo upload own conversation" on storage.objects;
+create policy "chat photo upload own conversation" on storage.objects
+for insert to authenticated
+with check (
+  bucket_id = 'chat-attachments'
+  and (storage.foldername(name))[1] = auth.uid()::text
+  and exists (
+    select 1 from public.conversations c
+    where c.id::text = (storage.foldername(name))[2]
+      and (c.customer_id = auth.uid() or public.is_shop_admin())
+  )
+);
+
+drop policy if exists "chat photo read conversation participants" on storage.objects;
+create policy "chat photo read conversation participants" on storage.objects
+for select to authenticated
+using (
+  bucket_id = 'chat-attachments'
+  and exists (
+    select 1 from public.conversations c
+    where c.id::text = (storage.foldername(name))[2]
+      and (c.customer_id = auth.uid() or public.is_shop_admin())
+  )
+);
