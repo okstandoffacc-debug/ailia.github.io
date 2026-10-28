@@ -14,14 +14,45 @@
   function open(){ $('auth-overlay').hidden=false; msg(''); }
   function close(){ $('auth-overlay').hidden=true; }
   async function refreshUser(){
-    const openBtn=$('auth-open'),out=$('auth-logout'),admin=$('account-link');
-    if(!window.sb){openBtn.textContent='Войти / Регистрация';out.hidden=true;admin.hidden=true;return;}
-    const {data:{session}}=await sb.auth.getSession();
-    if(!session){openBtn.textContent='Войти / Регистрация';out.hidden=true;admin.hidden=true;return;}
-    openBtn.textContent=session.user.email;
-    out.hidden=false;
-    const {data:profile}=await sb.from('profiles').select('role').eq('id',session.user.id).maybeSingle();
-    admin.hidden=false; if(profile&&profile.role==='admin'){ admin.textContent='Личный кабинет владельца'; const tools=document.getElementById('account-admin-tools'); if(tools) tools.hidden=false; const manageBtn=document.getElementById('l-manage-button'); if(manageBtn) manageBtn.hidden=false; } else { admin.textContent='Личный кабинет'; const tools=document.getElementById('account-admin-tools'); if(tools) tools.hidden=true; const manageBtn=document.getElementById('l-manage-button'); if(manageBtn) manageBtn.hidden=true; }
+    const openBtn=$('auth-open'), out=$('auth-logout'), lkOut=$('l-account-logout'), admin=$('account-link');
+    const setLoggedOut=()=>{
+      if(openBtn) openBtn.textContent='Войти / Регистрация';
+      if(out) out.hidden=true;
+      if(lkOut) lkOut.hidden=true;
+      if(admin) admin.hidden=true;
+      const tools=$('account-admin-tools'); if(tools) tools.hidden=true;
+      const manageBtn=$('l-manage-button'); if(manageBtn) manageBtn.hidden=true;
+    };
+    if(!window.sb){setLoggedOut();return;}
+    try {
+      const {data:{session},error}=await sb.auth.getSession();
+      if(error) throw error;
+      if(!session){setLoggedOut();return;}
+      if(openBtn) openBtn.textContent='ЛК';
+      if(out) out.hidden=true;
+      if(lkOut) lkOut.hidden=false;
+      if(admin) admin.hidden=false;
+      const {data:profile}=await sb.from('profiles').select('role').eq('id',session.user.id).maybeSingle();
+      if(admin) admin.textContent=profile&&profile.role==='admin'?'Личный кабинет владельца':'Личный кабинет';
+      const isAdmin=!!(profile&&profile.role==='admin');
+      const tools=$('account-admin-tools'); if(tools) tools.hidden=!isAdmin;
+      const manageBtn=$('l-manage-button'); if(manageBtn) manageBtn.hidden=!isAdmin;
+    } catch(err) { console.error('Не удалось проверить сессию Supabase:',err); }
+  }
+  async function logout(){
+    if(!window.sb){alert('Supabase не подключён.');return;}
+    const buttons=[$('auth-logout'),$('l-account-logout')].filter(Boolean);
+    buttons.forEach(b=>b.disabled=true);
+    try {
+      const {error}=await sb.auth.signOut();
+      if(error) throw error;
+      await refreshUser();
+      if(typeof window.renderProfile==='function') window.renderProfile();
+      if(location.hash==='#lk') location.hash='#home';
+    } catch(err) {
+      console.error('Ошибка выхода:',err);
+      alert('Не удалось выйти из аккаунта: '+(err.message||'попробуйте ещё раз'));
+    } finally { buttons.forEach(b=>b.disabled=false); }
   }
   document.addEventListener('DOMContentLoaded',()=>{
     const authOpenButton=$('auth-open');
@@ -59,7 +90,9 @@
       }catch(err){msg(err.message||'Не удалось выполнить запрос.');}
       finally{$('auth-submit').disabled=false;}
     });
-    $('auth-logout').addEventListener('click',async()=>{if(window.sb)await sb.auth.signOut();await refreshUser();});
+    const headerLogout=$('auth-logout'),lkLogout=$('l-account-logout');
+    if(headerLogout) headerLogout.addEventListener('click',logout);
+    if(lkLogout) lkLogout.addEventListener('click',logout);
     if(window.sb)sb.auth.onAuthStateChange(()=>{setTimeout(refreshUser,0);});
     refreshUser();
   });
