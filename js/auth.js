@@ -13,12 +13,21 @@
   }
   function open(){ $('auth-overlay').hidden=false; msg(''); }
   function close(){ $('auth-overlay').hidden=true; }
+  const HIDE_AUTH_BUTTON_KEY='antik_hide_auth_button_after_registration';
+  function hideAuthButtonAfterRegistration(){
+    try{ localStorage.setItem(HIDE_AUTH_BUTTON_KEY,'1'); }catch(e){}
+    const btn=$('auth-open'); if(btn)btn.hidden=true;
+  }
   async function refreshUser(){
     const openBtn=$('auth-open'),admin=$('account-link'),logout=$('l-account-logout');
     const emailRow=$('l-account-email-row'),emailEl=$('l-account-email');
     if(!window.sb){openBtn.hidden=false;admin.hidden=true;logout.hidden=true;emailRow.hidden=true;return;}
     const {data:{session}}=await sb.auth.getSession();
-    if(!session){openBtn.hidden=false;openBtn.textContent='Войти / Регистрация';admin.hidden=true;logout.hidden=true;emailRow.hidden=true;return;}
+    if(!session){
+      let hideAfterRegistration=false;
+      try{hideAfterRegistration=localStorage.getItem(HIDE_AUTH_BUTTON_KEY)==='1';}catch(e){}
+      openBtn.hidden=hideAfterRegistration;openBtn.textContent='Войти / Регистрация';admin.hidden=true;logout.hidden=true;emailRow.hidden=true;return;
+    }
     // После входа адрес почты и выход доступны только внутри личного кабинета.
     openBtn.hidden=true;
     if(emailEl)emailEl.textContent=session.user.email||'';
@@ -32,6 +41,12 @@
   }
   document.addEventListener('DOMContentLoaded',()=>{
     $('auth-open').addEventListener('click',()=>{if(window.sb)open();else alert('Авторизация ещё не настроена. Откройте README.md и подключите Supabase.');});
+    // Если после регистрации требуется подтверждение почты, кнопка авторизации скрывается,
+    // но войти по-прежнему можно через пункт «ЛК».
+    document.querySelectorAll('.header-actions a[href="#lk"]').forEach(link=>link.addEventListener('click',async e=>{
+      if(!window.sb){e.preventDefault();alert('Авторизация ещё не настроена. Откройте README.md и подключите Supabase.');return;}
+      try{const {data:{session}}=await sb.auth.getSession();if(!session){e.preventDefault();open();}}catch(err){}
+    }));
     $('auth-close').addEventListener('click',close);
     $('auth-overlay').addEventListener('click',e=>{if(e.target===$('auth-overlay'))close();});
     $('auth-tab-login').addEventListener('click',()=>setMode('login'));
@@ -45,8 +60,9 @@
         if(mode==='register'){
           const {data,error}=await sb.auth.signUp({email,password});
           if(error)throw error;
+          hideAuthButtonAfterRegistration();
           if(data.session){msg('Аккаунт создан. Вы вошли как обычный покупатель.',true);await refreshUser();setTimeout(close,900);}
-          else msg('Регистрация отправлена. Проверьте почту для подтверждения.',true);
+          else {msg('Регистрация отправлена. Проверьте почту для подтверждения. Для входа откройте «ЛК».',true);await refreshUser();setTimeout(close,1800);}
         }else{
           const {error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;
           msg('Вы вошли в аккаунт.',true);await refreshUser();setTimeout(close,500);
