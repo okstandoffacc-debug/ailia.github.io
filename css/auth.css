@@ -15,3 +15,7 @@
 .auth-footnote{margin-bottom:0}
 #admin-link[hidden],#auth-logout[hidden]{display:none}
 @media(max-width:650px){.header-actions{display:flex;flex-wrap:wrap;gap:6px}.header-actions .btn-phone{margin-left:0!important;font-size:.8rem;padding:8px}}
+
+.lk-account-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px}
+.lk-owner-label{font-weight:600;color:var(--gold,#c5a46d)}
+#l-account-logout{cursor:pointer}

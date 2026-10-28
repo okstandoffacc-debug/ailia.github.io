@@ -5,6 +5,6 @@ window.AVITO_REVIEWS = []
 // Вставьте сюда Project URL и anon/public key из Supabase Settings → API.
 // Это публичные значения для браузера; service_role key сюда добавлять НЕЛЬЗЯ.
 window.SUPABASE_CONFIG = {
-    url: "https://qxaokgxjahojcqevlwhb.supabase.co",
-    anonKey: "sb_publishable_gNUx4ovkW2vxzSJ16UTRtw_2AANsvWv"
+    url: "https://YOUR-PROJECT.supabase.co",
+    anonKey: "YOUR_SUPABASE_ANON_OR_PUBLISHABLE_KEY"
 };

@@ -23,8 +23,6 @@
                     <a href="#cart" id="cart-btn" class="btn-phone"><i class="fas fa-shopping-cart"></i> Корзина</a>
                     <a href="#lk" class="btn-phone" style="margin-left: 10px;"><i class="fas fa-user"></i> ЛК</a>
                     <button type="button" class="btn-phone auth-open" id="auth-open" style="margin-left:10px">Войти / Регистрация</button>
-                    <a href="#lk" class="btn-phone" id="account-link" hidden style="margin-left:10px">Личный кабинет</a>
-                    <button type="button" class="btn-phone" id="auth-logout" hidden style="margin-left:10px">Выйти</button>
                 </div>
             </div>
         </div>
@@ -284,7 +282,12 @@
             <div class="lk-avatar">👤</div>
             <div class="lk-user-info">
                 <h2 id="l-user-name">Гость</h2>
+                <p id="l-account-email-row" hidden>Электронная почта: <span id="l-account-email"></span></p>
                 <p>Время посещения: <span id="l-visit-time"></span></p>
+                <div class="lk-account-actions">
+                    <span id="account-link" hidden class="lk-owner-label">Личный кабинет владельца</span>
+                    <button type="button" class="btn-phone" id="l-account-logout" hidden>Выйти</button>
+                </div>
             </div>
         </div>
 
