@@ -426,7 +426,10 @@
       <label for="auth-email">Электронная почта</label>
       <input id="auth-email" type="email" autocomplete="email" required>
       <label for="auth-password">Пароль</label>
-      <input id="auth-password" type="password" minlength="8" autocomplete="current-password" required>
+      <div class="password-field">
+        <input id="auth-password" type="password" minlength="8" autocomplete="current-password" required>
+        <button type="button" id="auth-password-toggle" class="password-toggle" aria-label="Показать пароль" aria-pressed="false" title="Показать пароль">Показать</button>
+      </div>
       <p id="auth-message" class="auth-message" role="status"></p>
       <button type="submit" class="auth-submit" id="auth-submit">Войти</button>
     </form>

@@ -30,6 +30,17 @@
     $('auth-overlay').addEventListener('click',e=>{if(e.target===$('auth-overlay'))close();});
     $('auth-tab-login').addEventListener('click',()=>setMode('login'));
     $('auth-tab-register').addEventListener('click',()=>setMode('register'));
+    const passwordInput=$('auth-password'),passwordToggle=$('auth-password-toggle');
+    if(passwordInput&&passwordToggle){
+      passwordToggle.addEventListener('click',()=>{
+        const show=passwordInput.type==='password';
+        passwordInput.type=show?'text':'password';
+        passwordToggle.textContent=show?'Скрыть':'Показать';
+        passwordToggle.setAttribute('aria-label',show?'Скрыть пароль':'Показать пароль');
+        passwordToggle.title=show?'Скрыть пароль':'Показать пароль';
+        passwordToggle.setAttribute('aria-pressed',String(show));
+      });
+    }
     $('auth-form').addEventListener('submit',async e=>{
       e.preventDefault();
       if(!window.sb){msg('Сначала настройте Supabase в js/config.js.');return;}
