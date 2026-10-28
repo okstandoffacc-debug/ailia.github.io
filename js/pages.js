@@ -75,34 +75,42 @@
         $('o-step-2').classList.add('completed', 'active');
         updateCheckout();
     };
-    window.placeOrder = function () {
+    window.placeOrder = async function () {
         const v = id => $('o-' + id).value.trim();
+        if (!window.sb) { alert('Авторизация и оформление заказов пока не настроены.'); return; }
+        const { data: { session } } = await sb.auth.getSession();
+        if (!session) { alert('Для оформления заказа войдите или зарегистрируйтесь.'); document.getElementById('auth-open')?.click(); return; }
         const fio = v('customer-name'), phone = v('customer-phone'), region = v('region'), city = v('city'), street = v('street'), house = v('house'), pickup = v('pickup');
         if (!sel) { alert('Выберите компанию-перевозчика.'); return; }
-        if (fio.split(/\s+/).filter(Boolean).length < 2) { alert('Укажите ФИО получателя полностью (фамилия, имя, отчество) — оно нужно перевозчику.'); return; }
+        if (fio.split(/\s+/).filter(Boolean).length < 2) { alert('Укажите ФИО получателя полностью.'); return; }
         if (phone.replace(/\D/g, '').length < 10) { alert('Проверьте телефон получателя.'); return; }
         if (!region || !city) { alert('Укажите область и город.'); return; }
         if (!pickup && !(street && house)) { alert('Укажите улицу и дом или пункт выдачи / отделение.'); return; }
-        const ls = lines(), sub = ls.reduce((s, l) => s + pr(l.p) * l.q, 0), d = dPrice(sel);
+        const ls = lines();
+        if (!ls.length) { alert('Корзина пуста.'); return; }
+        if (ls.some(l => l.q !== 1)) { alert('Антикварные товары продаются в единственном экземпляре. Уберите дубликаты из корзины.'); return; }
+        const sub = ls.reduce((sum, l) => sum + pr(l.p) * l.q, 0), d = dPrice(sel);
         const apt = v('apartment'), zip = v('zip'), email = v('customer-email');
-        let m = `*НОВЫЙ ЗАКАЗ* 📦\n\n*Получатель (ФИО):* ${fio}\n*Телефон:* ${phone}\n*Email:* ${email || 'не указан'}\n\n*Перевозчик:* ${DEL[sel][0]}\n*Адрес:* ${region}, ${city}${street ? ', ' + street : ''}${house ? ', д. ' + house : ''}${apt ? ', кв. ' + apt : ''}\n*Индекс:* ${zip || 'не указан'}\n${pickup ? '*Пункт выдачи / отделение:* ' + pickup + '\n' : ''}\n*Товары:*\n`;
-        ls.forEach(({ p, q }) => m += `- ${p.name} ×${q} (${pr(p) ? (pr(p) * q) + ' ₽' : 'цена на Авито'}) ${p.link}\n`);
-        m += `\n*Товары на сумму:* ${sub > 0 ? sub + ' ₽' : 'уточнить'}\n*Доставка (ориентировочно):* ${d} ₽ — прошу подтвердить стоимость`;
-        const orders = getList('orders');
-        orders.unshift({ id: Date.now(), date: new Date().toISOString(), items: ls.map(l => ({ avitoId: l.p.avitoId, name: l.p.name, price: l.p.price, quantity: l.q })),
-            total: sub + d, customer: { name: fio, phone, email }, address: { region, city, street, house, apartment: apt, zip, pickup }, delivery: { type: sel, company: DEL[sel][0], price: d } });
-        localStorage.setItem('orders', JSON.stringify(orders));
-        saveCart([]); updateCartCount();
-        window.open(`https://wa.me/${SHOP}?text=${encodeURIComponent(m)}`, '_blank');
-        sel = null;
-        document.querySelectorAll('#view-checkout input').forEach(i => i.value = '');
-        alert('Заказ сохранён в личном кабинете. Отправьте сообщение в открывшемся окне WhatsApp — продавец подтвердит цену и стоимость доставки.');
-        location.hash = 'lk';
+        const items = ls.map(l => ({ product_id: Number(l.p.id), avitoId: l.p.avitoId, name: l.p.name, price: l.p.price, quantity: l.q }));
+        const customer = { name: fio, phone, email: email || session.user.email };
+        const address = { region, city, street, house, apartment: apt, zip, pickup };
+        const delivery = { type: sel, company: DEL[sel][0], price: d };
+        try {
+            const { data: orderId, error } = await sb.rpc('create_shop_order', { p_product_ids: items.map(i => i.product_id), p_items: items, p_customer: customer, p_address: address, p_delivery: delivery, p_total: sub + d });
+            if (error) throw error;
+            const m = `НОВЫЙ ЗАКАЗ №${orderId}\nПолучатель: ${fio}\nТелефон: ${phone}\nEmail: ${customer.email}\nПеревозчик: ${delivery.company}\nАдрес: ${region}, ${city}${street ? ', '+street : ''}${house ? ', д. '+house : ''}${apt ? ', кв. '+apt : ''}\nИндекс: ${zip || 'не указан'}\nПункт выдачи: ${pickup || 'не указан'}\nТовары: ${items.map(i=>i.name+' — '+i.price).join('; ')}\nСумма с ориентировочной доставкой: ${sub+d} ₽`;
+            saveCart([]); updateCartCount(); window.open(`https://wa.me/${SHOP}?text=${encodeURIComponent(m)}`, '_blank');
+            sel = null; document.querySelectorAll('#view-checkout input').forEach(i => i.value = '');
+            alert('Заказ оформлен. Товар снят с витрины и теперь отображается в личном кабинете. Отправьте сообщение продавцу в открывшемся WhatsApp для подтверждения доставки.');
+            await window.refreshRemoteCatalog?.(); location.hash = 'lk';
+        } catch (err) { alert('Не удалось оформить заказ: ' + (err.message || 'ошибка сервера')); }
     };
 
     // ---------- личный кабинет ----------
-    function renderLk() {
-        const orders = getList('orders'), reviews = getList('antique_reviews');
+    async function renderLk() {
+        let orders = getList('orders');
+        if (window.sb) { try { const {data:{session}} = await sb.auth.getSession(); if(session){ const {data,error}=await sb.from('orders').select('*').order('created_at',{ascending:false}); if(!error) orders=(data||[]).map(o=>({...o,date:o.created_at})); } } catch(e) { console.warn('Не удалось загрузить заказы',e); } }
+        const reviews = getList('antique_reviews');
         const favs = getList('favorites').map(f => byAvito(f.avitoId)).filter(Boolean);
         const seen = getList('viewed_ids').map(byAvito).filter(Boolean);
         $('l-user-name').textContent = (orders[0] && orders[0].customer && orders[0].customer.name) || 'Гость';
@@ -111,12 +119,12 @@
         $('l-order-count').textContent = orders.length; $('l-review-count').textContent = reviews.length;
         $('l-viewed-list').innerHTML = seen.length ? seen.map(p => `<a class="lk-list-item" href="#product-${p.id}" style="text-decoration:none">${img(p)} class="lk-list-image"><div class="lk-list-content"><div class="lk-list-title">${esc(p.name)}</div><div class="lk-list-date">${esc(p.price)}</div></div></a>`).join('') : empty('История просмотров пуста');
         $('l-favorites-list').innerHTML = favs.length ? favs.map(p => `<div class="lk-favorite-card"><a href="#product-${p.id}">${img(p)} class="lk-favorite-image"></a><div class="lk-favorite-info"><div class="lk-favorite-title">${esc(p.name)}</div><div class="lk-favorite-price">${esc(p.price)}</div><button class="btn-remove" onclick="lkUnfav('${p.avitoId}')">Удалить</button></div></div>`).join('') : empty('В избранном пока ничего нет');
-        $('l-orders-list').innerHTML = orders.length ? orders.map((o, i) => `<div class="review-card" style="background:#1f2d27;border-left-color:#a8843f"><div class="review-header" style="color:#e4e2d6"><span class="review-author" style="color:#f2eee3">Заказ №${orders.length - i}</span><span class="review-date">${new Date(o.date).toLocaleDateString('ru-RU')}</span></div>
+        $('l-orders-list').innerHTML = orders.length ? orders.map((o, i) => `<div class="review-card" style="background:#1f2d27;border-left-color:#a8843f"><div class="review-header" style="color:#e4e2d6"><span class="review-author" style="color:#f2eee3">Заказ №${o.id || orders.length - i}</span><span class="review-date">${new Date(o.date).toLocaleDateString('ru-RU')}</span></div>
             <div style="color:#d9d3c3">${(o.items || []).map(x => `<p style="margin:.2rem 0">${esc(x.name)} × ${x.quantity}</p>`).join('')}
             <p style="margin:.5rem 0 .2rem"><strong>Доставка:</strong> ${esc(o.delivery && o.delivery.company)}, ${o.delivery ? o.delivery.price : 0} ₽</p>
             <p style="margin:.2rem 0"><strong>Адрес:</strong> ${esc([o.address.region, o.address.city, o.address.street, o.address.house].filter(Boolean).join(', '))}</p>
             <p style="margin:.2rem 0"><strong>Итого:</strong> ${o.total > 0 && (o.items || []).every(x => parseInt(String(x.price).replace(/\D/g, ''), 10)) ? o.total + ' ₽' : 'уточняется'}</p>
-            <p style="margin:.2rem 0"><strong>Статус:</strong> <span style="color:#ffb300">Ожидает подтверждения</span></p></div></div>`).join('') : empty('У вас пока нет заказов');
+            <p style="margin:.2rem 0"><strong>Статус:</strong> <span style="color:#ffb300">${esc(({ordered:'Заказ оформлен',sent:'Отправлен',at_warehouse:'Прибыл на склад / сортировочный центр',ready_for_pickup:'Готов к получению',delivered:'Получен покупателем',cancelled:'Отменён'})[o.status] || 'Ожидает подтверждения')}</span></p>${o.tracking_number?`<p style="margin:.2rem 0"><strong>Трек-номер:</strong> ${esc(o.tracking_number)}</p>`:''}${o.status_note?`<p style="margin:.2rem 0">${esc(o.status_note)}</p>`:''}</div></div>`).join('') : empty('У вас пока нет заказов');
         $('l-user-reviews-list').innerHTML = reviews.length ? reviews.map(r => `<div class="review-card" style="background:#1f2d27"><div class="review-header"><span class="review-author" style="color:#f2eee3">${esc(r.name)}</span><span class="review-date">${new Date(r.date).toLocaleDateString('ru-RU')}</span></div><div class="review-rating">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div><p class="review-text" style="color:#b9c2b4">${esc(r.text)}</p></div>`).join('') : empty('Вы пока не оставляли отзывов');
     }
     window.lkUnfav = function (a) { localStorage.setItem('favorites', JSON.stringify(getList('favorites').filter(f => f.avitoId !== a))); renderLk(); };

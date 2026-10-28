@@ -8,7 +8,7 @@
     const fmtRub = n => n > 0 ? n.toLocaleString('ru-RU') + ' ₽' : 'по запросу';
     const ICONS = { 'Посуда': 'fa-mug-hot', 'Свет': 'fa-lightbulb', 'Фигурки и декор': 'fa-chess-knight', 'Инструменты и приборы': 'fa-compass', 'Кухня и быт': 'fa-utensils', 'Техника': 'fa-radio', 'Медицина': 'fa-kit-medical', 'Курительные': 'fa-smoking' };
 
-    const products = (window.CATALOG || []).map(p => Object.assign({ price: 'Цена на Авито', category: 'Разное', year: '', image: '', description: '', seller: 'Старинная Коллекция', link: '' }, p));
+    const products = (window.CATALOG || []).map(p => Object.assign({ price: 'Цена на Авито', category: 'Разное', year: '', image: '', description: '', seller: 'Старинная Коллекция', link: '', available: true }, p));
     const getCart = () => getList('cart');
     const saveCart = c => localStorage.setItem('cart', JSON.stringify(c));
     const getFavs = () => getList('favorites');
@@ -133,7 +133,14 @@
     }
     function showAllReviews() { allReviews = true; renderReviews(); }
 
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', async function () {
+        if (typeof window.loadRemoteProducts === 'function') {
+            const remote = await window.loadRemoteProducts();
+            if (Array.isArray(remote) && window.sb) {
+                products.splice(0, products.length, ...remote);
+                window.products = products;
+            }
+        }
         updateCartCount();
         renderCategories(); renderProducts(); renderReviews();
 
@@ -159,5 +166,6 @@
     });
 
     Object.assign(window, { products, NO_IMG, getCart, saveCart, getList, fmtRub, addToCart, removeFromCart, updateCartCount,
-        toggleFavorite, showProduct, showAllReviews, filterByCategory, searchProducts, handleSort, resetFilters });
+        toggleFavorite, showProduct, showAllReviews, filterByCategory, searchProducts, handleSort, resetFilters,
+        refreshRemoteCatalog: async function(){ const remote=await window.loadRemoteProducts?.(); if(Array.isArray(remote)&&window.sb){products.splice(0,products.length,...remote);renderCategories();renderProducts();} } });
 })();

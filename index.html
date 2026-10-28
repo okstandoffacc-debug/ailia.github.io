@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/auth.css">
 </head>
 <body>
 <header class="site-header">
@@ -21,6 +22,9 @@
                 <div class="header-actions">
                     <a href="#cart" id="cart-btn" class="btn-phone"><i class="fas fa-shopping-cart"></i> Корзина</a>
                     <a href="#lk" class="btn-phone" style="margin-left: 10px;"><i class="fas fa-user"></i> ЛК</a>
+                    <button type="button" class="btn-phone auth-open" id="auth-open" style="margin-left:10px">Войти / Регистрация</button>
+                    <a href="#lk" class="btn-phone" id="account-link" hidden style="margin-left:10px">Личный кабинет</a>
+                    <button type="button" class="btn-phone" id="auth-logout" hidden style="margin-left:10px">Выйти</button>
                 </div>
             </div>
         </div>
@@ -308,6 +312,7 @@
         <div class="lk-menu">
             <button class="lk-menu-btn active" onclick="showSection('history', this)">История</button>
             <button class="lk-menu-btn" onclick="showSection('orders', this)">Мои заказы</button>
+            <button class="lk-menu-btn" id="l-manage-button" onclick="showSection('manage', this)" hidden>Управление магазином</button>
             <button class="lk-menu-btn" onclick="showSection('favorites', this)">Избранное</button>
             <button class="lk-menu-btn" onclick="showSection('reviews', this)">Мои отзывы</button>
         </div>
@@ -359,6 +364,10 @@
             </div>
         </section>
 
+        <section id="l-manage" class="lk-section">
+            <div id="account-admin-tools" hidden></div>
+        </section>
+
         <!-- Избранное -->
         <section id="l-favorites" class="lk-section">
             <h2 style="color: #d9d3c3; margin-bottom: 1rem;">Избранное</h2>
@@ -381,10 +390,36 @@
             <p class="footer-subtext">Антиквариат и редкости XIX-XX веков</p>
         </div>
     <p class="footer-subtext" style="font-size:.8rem;opacity:.5">Версия сборки: 28.10.2026 10:26</p></footer>
-<script src="js/catalog.js" defer></script>
+
+<div class="auth-overlay" id="auth-overlay" hidden>
+  <section class="auth-dialog" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+    <button type="button" class="auth-close" id="auth-close" aria-label="Закрыть">×</button>
+    <h2 id="auth-title">Вход в аккаунт</h2>
+    <p class="auth-subtitle">Войдите или создайте обычный аккаунт покупателя.</p>
+    <div class="auth-tabs">
+      <button type="button" class="active" id="auth-tab-login">Вход</button>
+      <button type="button" id="auth-tab-register">Регистрация</button>
+    </div>
+    <form id="auth-form">
+      <label for="auth-email">Электронная почта</label>
+      <input id="auth-email" type="email" autocomplete="email" required>
+      <label for="auth-password">Пароль</label>
+      <input id="auth-password" type="password" minlength="8" autocomplete="current-password" required>
+      <p id="auth-message" class="auth-message" role="status"></p>
+      <button type="submit" class="auth-submit" id="auth-submit">Войти</button>
+    </form>
+    <p class="auth-footnote">Регистрация не даёт права редактировать товары.</p>
+  </section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 <script src="js/config.js" defer></script>
+<script src="js/supabase-store.js" defer></script>
+<script src="js/auth.js" defer></script>
+<script src="js/catalog.js" defer></script>
 <script src="js/app.js" defer></script>
 <script src="js/pages.js" defer></script>
+<script src="js/account-admin.js" defer></script>
 <script src="js/animations.js" defer></script>
 </body>
 </html>
