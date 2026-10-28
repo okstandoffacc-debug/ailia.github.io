@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Старинная Коллекция — Антиквариат и Редкости</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1 class="logo-text"><a href="#shop" style="color:inherit;text-decoration:none">Старинная Коллекция</a></h1>
+                    <p class="logo-subtitle">Антиквариат и редкости</p>
+                </div>
+                <div class="header-actions">
+                    <a href="#cart" id="cart-btn" class="btn-phone"><i class="fas fa-shopping-cart"></i> Корзина</a>
+                    <a href="#lk" class="btn-phone" style="margin-left: 10px;"><i class="fas fa-user"></i> ЛК</a>
+                </div>
+            </div>
+        </div>
+    </header>
+<div id="view-shop">
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h2 class="hero-title">История в каждой детали</h2>
+                <p class="hero-subtitle">Уникальные предметы старины от 18 до 20 века</p>
+                <a href="#products" class="btn-primary">Посмотреть коллекцию</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="products-section">
+        <div class="container">
+            <h2 class="section-title">Наши товары</h2>
+
+            <!-- Search and Sort -->
+            <div class="search-sort-bar">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-input" placeholder="Поиск по названию..." oninput="searchProducts()">
+                </div>
+                <div class="sort-options">
+                    <select id="sort-select" onchange="handleSort(this.value)">
+                        <option value="default">Сортировка</option>
+                        <option value="price-asc">Цена: по возрастанию</option>
+                        <option value="price-desc">Цена: по убыванию</option>
+                        <option value="new-first">Новинки</option>
+                    </select>
+                    <button class="reset-btn" onclick="resetFilters()" style="display:none; margin-left: 10px;" id="reset-filters-btn">Сброс</button>
+                </div>
+            </div>
+
+            <!-- Category filters -->
+            <div class="category-filters" id="category-filters">
+                <!-- Categories will be rendered by JavaScript -->
+            </div>
+
+            <div class="products-grid" id="products-grid">
+                <!-- Products will be rendered here by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Reviews Section -->
+    <section id="reviews" class="reviews-section">
+        <div class="container">
+            <h2 class="section-title">Отзывы покупателей</h2>
+
+            <div class="reviews-container" id="reviews-container">
+                <!-- Reviews will be rendered here by JavaScript -->
+            </div>
+
+            <div class="review-form-section">
+                <h3 class="form-title">Оставить отзыв</h3>
+                <form id="review-form" class="vintage-form">
+                    <div class="form-group">
+                        <label for="review-name">Ваше имя</label>
+                        <input type="text" id="review-name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="review-rating">Оценка</label>
+                        <select id="review-rating" name="rating" required>
+                            <option value="5">⭐⭐⭐⭐⭐ Отлично</option>
+                            <option value="4">⭐⭐⭐⭐ Хорошо</option>
+                            <option value="3">⭐⭐⭐ Нормально</option>
+                            <option value="2">⭐⭐ Плохо</option>
+                            <option value="1">⭐ Ужасно</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="review-text">Текст отзыва</label>
+                        <textarea id="review-text" name="text" rows="4" required></textarea>
+                    </div>
+                    <button type="submit" class="btn-submit">Отправить отзыв</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <div class="container">
+            <h2 class="section-title">Контакты</h2>
+            <div class="contact-card">
+                <div class="contact-item">
+                    <span class="contact-icon">📞</span>
+                    <div class="contact-info">
+                        <p class="contact-label">Телефон</p>
+                        <p class="contact-value"><a href="tel:+79046334595">+7 (904) 633-45-95</a></p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-icon">📍</span>
+                    <div class="contact-info">
+                        <p class="contact-label">Город</p>
+                        <p class="contact-value">Санкт-Петербург</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-icon">✉️</span>
+                    <div class="contact-info">
+                        <p class="contact-label">Email</p>
+                        <p class="contact-value"><a href="mailto:info@antique-shop.ru">info@antique-shop.ru</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="social-links">
+                <a href="https://wa.me/+79046334595" target="_blank" rel="noopener" class="social-link">WhatsApp</a>
+                
+                <a href="https://www.avito.ru/user/39b1f3f161f1355a0778e101989f1a3f/profile/all/kollektsionirovanie?id=8213894410&iid=8213894410&page_from=from_item_messenger&src=messenger&sellerId=39b1f3f161f1355a0778e101989f1a3f" class="social-link" target="_blank" style="background-color: #2f4a3f; border-color: #2f4a3f;">Avito</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    </div>
+<div id="view-product" hidden><main class="product-detail-section"><div class="container">
+        <div class="container">
+            <a href="#shop" class="btn-back">← Вернуться к товарам</a>
+
+            <div class="product-detail-container" id="p-product-detail">
+                <!-- Content will be rendered here by JavaScript -->
+            </div>
+        </div>
+    </div></main></div>
+<div id="view-cart" class="cart-page" hidden><main class="cart-container">
+        <div class="cart-header">
+            <h1><i class="fas fa-shopping-cart"></i> Корзина</h1>
+            <p>Ваша корзина содержит <span id="c-cart-count">0</span> товаров</p>
+        </div>
+
+        <div id="c-cart-items" class="cart-items">
+            <div class="empty-cart">
+                <i class="fas fa-shopping-cart"></i>
+                <p>Ваша корзина пуста</p>
+                <a href="#shop" class="back-link">Вернуться к товарам</a>
+            </div>
+        </div>
+
+        <div id="c-cart-summary" class="cart-summary" style="display: none;">
+            <div class="summary-row">
+                <span>Товары:</span>
+                <span id="c-subtotal">0 ₽</span>
+            </div>
+            <div class="summary-row">
+                <span>Доставка:</span>
+                <span>Рассчитывается при оформлении</span>
+            </div>
+            <div class="summary-total">
+                <span>Итого:</span>
+                <span id="c-total">0 ₽</span>
+            </div>
+            <button class="btn-checkout" onclick="location.hash='checkout'">Оформить заказ</button>
+        </div>
+
+        <a href="#shop" class="back-link"><i class="fas fa-arrow-left"></i> Продолжить покупки</a>
+    </main></div>
+<div id="view-checkout" class="checkout-page" hidden><main class="checkout-container">
+        <div class="checkout-header">
+            <h1>Оформление заказа</h1>
+        </div>
+
+        <div class="checkout-steps">
+            <div class="step active">1. Корзина</div>
+            <div class="step" id="o-step-2">2. Доставка</div>
+            <div class="step" id="o-step-3">3. Данные</div>
+        </div>
+
+        <div class="cart-summary-small" id="o-cart-summary">
+            <h3 style="margin-bottom: 1rem;">Ваш заказ:</h3>
+            <div id="o-cart-items-mini"></div>
+            <div style="margin-top: 1rem; border-top: 1px solid #e0e0e0; padding-top: 1rem;">
+                <div class="cart-item-mini"><span>Товары:</span><span id="o-subtotal-mini">0 ₽</span></div>
+                <div class="cart-item-mini"><span>Доставка:</span><span id="o-delivery-mini">Бесплатно</span></div>
+                <div class="cart-item-mini" style="font-weight: bold; color: #7a2e2a;"><span>Итого:</span><span id="o-total-mini">0 ₽</span></div>
+            </div>
+        </div>
+
+        <div id="o-delivery-section" class="delivery-section">
+            <h3><i class="fas fa-truck"></i> Компания-перевозчик</h3>
+            <div class="delivery-options">
+                <div class="delivery-option" onclick="selectDelivery('post', this)">
+                    <i class="fas fa-envelope"></i>
+                    <h4>Почта России</h4>
+                    <p>Доставка до отделения</p>
+                    <span class="delivery-price" id="o-price-post">350 ₽</span>
+                </div>
+                <div class="delivery-option" onclick="selectDelivery('cde', this)">
+                    <i class="fas fa-box"></i>
+                    <h4>СДЭК</h4>
+                    <p>Курьерская доставка</p>
+                    <span class="delivery-price" id="o-price-cde">550 ₽</span>
+                </div>
+                <div class="delivery-option" onclick="selectDelivery('boxberry', this)">
+                    <i class="fas fa-building"></i>
+                    <h4>Boxberry</h4>
+                    <p>Пункты выдачи</p>
+                    <span class="delivery-price" id="o-price-boxberry">390 ₽</span>
+                </div>
+                <div class="delivery-option" onclick="selectDelivery('ozon', this)">
+                    <i class="fas fa-box-open"></i>
+                    <h4>Ozon</h4>
+                    <p>Пункты выдачи</p>
+                    <span class="delivery-price" id="o-price-ozon">450 ₽</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="o-address-section" class="address-section">
+            <h3><i class="fas fa-map-marker-alt"></i> Адрес доставки</h3>
+            <p style="color:#6b6a5e;margin-bottom:1rem">Укажите улицу и дом — или пункт выдачи / отделение, куда отправить.</p>
+            <div class="form-grid">
+                <div class="form-group"><label>Область / Край *</label><input type="text" id="o-region" placeholder="Например: Ленинградская"></div>
+                <div class="form-group"><label>Город *</label><input type="text" id="o-city" placeholder="Например: Санкт-Петербург"></div>
+                <div class="form-group"><label>Улица</label><input type="text" id="o-street" placeholder="Например: Невский проспект"></div>
+                <div class="form-group"><label>Дом</label><input type="text" id="o-house" placeholder="Например: 123"></div>
+                <div class="form-group"><label>Квартира</label><input type="text" id="o-apartment" placeholder="Например: 45"></div>
+                <div class="form-group"><label>Индекс</label><input type="text" id="o-zip" placeholder="190000"></div>
+                <div class="form-group"><label>Пункт выдачи / отделение</label><input type="text" id="o-pickup" placeholder="Например: Ozon, ул. Садовая, 5"></div>
+            </div>
+        </div>
+
+        <div class="customer-info">
+            <h3><i class="fas fa-user"></i> Контактные данные</h3>
+            <div class="form-grid">
+                <div class="form-group"><label>ФИО получателя *</label><input type="text" id="o-customer-name" placeholder="Иванов Иван Иванович" autocomplete="name"></div>
+                <div class="form-group"><label>Телефон получателя *</label><input type="tel" id="o-customer-phone" placeholder="+7 (999) 000-00-00" autocomplete="tel"></div>
+                <div class="form-group"><label>Email</label><input type="email" id="o-customer-email" placeholder="example@email.com"></div>
+            </div>
+        </div>
+
+        <div class="order-total">
+            <div class="total-row"><span>Товары:</span><span id="o-total-products">0 ₽</span></div>
+            <div class="total-row"><span>Доставка:</span><span id="o-total-delivery">0 ₽</span></div>
+            <div class="total-row final"><span>Итого:</span><span id="o-grand-total">0 ₽</span></div>
+            <button class="btn-place-order" onclick="placeOrder()">Оформить заказ</button>
+        </div>
+
+        <a href="#cart" class="back-link"><i class="fas fa-arrow-left"></i> Вернуться в корзину</a>
+    </main></div>
+<div id="view-lk" class="lk-page" hidden><main class="lk-container">
+        <div class="lk-header">
+            <h1>Личный кабинет</h1>
+            <p>Добро пожаловать в мир антиквариата</p>
+        </div>
+
+        <!-- Карточка пользователя -->
+        <div class="lk-user-card">
+            <div class="lk-avatar">👤</div>
+            <div class="lk-user-info">
+                <h2 id="l-user-name">Гость</h2>
+                <p>Время посещения: <span id="l-visit-time"></span></p>
+            </div>
+        </div>
+
+        <!-- Статистика -->
+        <div class="lk-stats">
+            <div class="lk-stat-card">
+                <div class="lk-stat-value" id="l-viewed-count">0</div>
+                <div class="lk-stat-label">Просмотрено</div>
+            </div>
+            <div class="lk-stat-card">
+                <div class="lk-stat-value" id="l-favorite-count">0</div>
+                <div class="lk-stat-label">Избранное</div>
+            </div>
+            <div class="lk-stat-card">
+                <div class="lk-stat-value" id="l-order-count">0</div>
+                <div class="lk-stat-label">Заказы</div>
+            </div>
+            <div class="lk-stat-card">
+                <div class="lk-stat-value" id="l-review-count">0</div>
+                <div class="lk-stat-label">Отзывы</div>
+            </div>
+        </div>
+
+        <!-- Навигация -->
+        <div class="lk-menu">
+            <button class="lk-menu-btn active" onclick="showSection('history', this)">История</button>
+            <button class="lk-menu-btn" onclick="showSection('orders', this)">Мои заказы</button>
+            <button class="lk-menu-btn" onclick="showSection('favorites', this)">Избранное</button>
+            <button class="lk-menu-btn" onclick="showSection('reviews', this)">Мои отзывы</button>
+        </div>
+
+        <!-- История просмотров -->
+        <section id="l-history" class="lk-section active">
+            <h2 style="color: #d9d3c3; margin-bottom: 1rem;">История просмотров</h2>
+            <div class="lk-list" id="l-viewed-list">
+                <p style="padding: 2rem; text-align: center; color: #a8843f;">История просмотров пуста</p>
+            </div>
+
+            <h2 style="color: #d9d3c3; margin-top: 2rem; margin-bottom: 1rem;">История сайта</h2>
+            <div class="lk-history">
+                <h3>Наша история</h3>
+                <p>Добро пожаловать в "Старинную Коллекцию" — магазин антиквариата с историей, насчитывающей более ста лет!</p>
+
+                <div class="lk-history-item">
+                    <h4>1890-е годы</h4>
+                    <p>Мы начинали как небольшая лавка на Невском проспекте, где продавали антикварные предметы, привезённые из Европы. У нас уже тогда были ценители старинных вещей, которые ценили красоту и редкость каждого экземпляра.</p>
+                </div>
+
+                <div class="lk-history-item">
+                    <h4>1920-1940-е годы</h4>
+                    <p>Пережили революцию и гражданскую войну. Некоторые экспонаты были переданы в музеи, но мы сохранили самое ценное — знание предметов и доверие клиентов.</p>
+                </div>
+
+                <div class="lk-history-item">
+                    <h4>1950-1980-е годы</h4>
+                    <p>Эпоха советского антиквариата. Мы специализировались на предметах XIX века — фарфоре, серебре, книгах и картинах. Многие коллекционеры искали именно у нас.</p>
+                </div>
+
+                <div class="lk-history-item">
+                    <h4>2000-е годы</h4>
+                    <p>Время возрождения. Мы открыли интернет-магазин, чтобы каждый мог увидеть и приобрести антиквариат из любой точки страны.</p>
+                </div>
+
+                <div class="lk-history-item">
+                    <h4>2026 год</h4>
+                    <p>Сегодня мы — современный интернет-магазин, но сохранили дух старинной лавки. Каждый предмет проходит экспертизу, и мы гарантируем его подлинность.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Мои заказы -->
+        <section id="l-orders" class="lk-section">
+            <h2 style="color: #d9d3c3; margin-bottom: 1rem;">Мои заказы</h2>
+            <div class="lk-list" id="l-orders-list">
+                <p style="padding: 2rem; text-align: center; color: #a8843f;">У вас пока нет заказов</p>
+            </div>
+        </section>
+
+        <!-- Избранное -->
+        <section id="l-favorites" class="lk-section">
+            <h2 style="color: #d9d3c3; margin-bottom: 1rem;">Избранное</h2>
+            <div class="lk-favorites-grid" id="l-favorites-list">
+                <p style="padding: 2rem; text-align: center; color: #a8843f;">В избранном пока ничего нет</p>
+            </div>
+        </section>
+
+        <!-- Мои отзывы -->
+        <section id="l-reviews" class="lk-section">
+            <h2 style="color: #d9d3c3; margin-bottom: 1rem;">Мои отзывы</h2>
+            <div class="lk-list" id="l-user-reviews-list">
+                <p style="padding: 2rem; text-align: center; color: #a8843f;">Вы пока не оставляли отзывов</p>
+            </div>
+        </section>
+    </main></div>
+<footer class="site-footer">
+        <div class="container">
+            <p class="footer-text">&copy; 2026 Старинная Коллекция. Все права защищены.</p>
+            <p class="footer-subtext">Антиквариат и редкости XIX-XX веков</p>
+        </div>
+    <p class="footer-subtext" style="font-size:.8rem;opacity:.5">Версия сборки: 28.10.2026 10:26</p></footer>
+<script src="js/catalog.js" defer></script>
+<script src="js/config.js" defer></script>
+<script src="js/app.js" defer></script>
+<script src="js/pages.js" defer></script>
+<script src="js/animations.js" defer></script>
+</body>
+</html>
