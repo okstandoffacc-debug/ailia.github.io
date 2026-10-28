@@ -9,6 +9,8 @@ create table if not exists public.conversations (
   last_message_at timestamptz not null default now()
 );
 create index if not exists conversations_customer_recent_idx on public.conversations(customer_id,last_message_at desc);
+alter table public.conversations add column if not exists product_price text not null default '';
+alter table public.conversations add column if not exists customer_name text not null default '';
 create table if not exists public.messages (
   id uuid primary key default gen_random_uuid(),
   conversation_id uuid not null references public.conversations(id) on delete cascade,

@@ -172,7 +172,6 @@
         document.title = p.name + ' — Старинная Коллекция';
         const seen = getList('viewed_ids').filter(a => a !== p.avitoId); seen.unshift(p.avitoId);
         localStorage.setItem('viewed_ids', JSON.stringify(seen.slice(0, 10)));
-        const wa = `https://wa.me/${SHOP}?text=${encodeURIComponent('Здравствуйте! Интересует: ' + p.name + ' ' + p.link)}`;
         const fav = isFav(p.avitoId);
         box.innerHTML = `<div class="product-detail-header"><h1 class="product-detail-title">${esc(p.name)}</h1><p class="product-detail-price">${esc(p.price)}</p></div>
             ${gallery(p)}
@@ -183,7 +182,7 @@
               <button type="button" class="btn-action" style="background:#1f2d27;color:#fff;border-color:#1f2d27;cursor:pointer" onclick="addToCart(${p.id})">В корзину</button>
               <button type="button" class="btn-action" style="background:transparent;color:#7a2e2a;border-color:#7a2e2a;cursor:pointer" onclick="pFav(${p.id})">${fav ? '♥ В избранном' : '♡ В избранное'}</button>
               <a href="tel:+${SHOP}" class="btn-action btn-call">Позвонить ${esc(CONFIG.phoneDisplay)}</a>
-              <button type="button" class="btn-action btn-chat" onclick="openShopChat({id:${Number(p.id)||0},name:decodeURIComponent('${encodeURIComponent(p.name)}')})">Написать продавцу</button>
+              <button type="button" class="btn-action btn-chat" onclick="openShopChat({id:${Number(p.id)||0},name:decodeURIComponent('${encodeURIComponent(p.name)}'),price:decodeURIComponent('${encodeURIComponent(p.price||'Цена не указана')}')})">Написать</button>
               <a href="${esc(p.link)}" target="_blank" rel="noopener" class="btn-action" style="background:#2f4a3f;color:#fff;border-color:#2f4a3f;flex-basis:100%">Открыть объявление на Авито</a></div></div>`;
     }
 
