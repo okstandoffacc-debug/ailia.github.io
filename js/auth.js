@@ -43,6 +43,7 @@
 
     try {
       if (!window.sb) {
+        // Fail visibly when Supabase is not configured; visitors can still see the auth entry point.
         if (authOpen) authOpen.hidden = false;
         if (logout) logout.hidden = true;
         if (accountLink) accountLink.hidden = true;
@@ -56,7 +57,8 @@
       const session = data && data.session;
 
       // The main-screen auth button is shown only to signed-out visitors.
-      if (authOpen) authOpen.hidden = !!session;
+      // Header rule: signed-out visitors see Login/Register; signed-in users see only Cart and LK.
+      if (authOpen) { authOpen.hidden = Boolean(session); authOpen.setAttribute('aria-hidden', String(Boolean(session))); }
       if (logout) logout.hidden = !session;
       if (accountLink) accountLink.hidden = !session;
 
