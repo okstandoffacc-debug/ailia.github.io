@@ -1,0 +1,12 @@
+.lk-profile-avatar{width:88px;height:88px;flex:0 0 88px;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#29372f;border:2px solid #a8843f;font-size:2.4rem;color:#f3eee2}
+.lk-profile-avatar img{width:100%;height:100%;object-fit:cover}
+.lk-profile-edit{margin:18px 0 24px;padding:20px;background:rgba(28,39,32,.94);border:1px solid rgba(168,132,63,.65);border-radius:12px;color:#eee9dc}
+.lk-profile-edit h3{margin:0 0 14px;color:#d9c28d}
+.lk-profile-edit-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;max-width:540px}
+.lk-profile-edit label{display:block;font-size:.92rem;margin-bottom:6px;color:#d9d3c3}
+.lk-profile-edit input[type=text],.lk-profile-edit input[type=file]{width:100%;box-sizing:border-box;padding:11px;border:1px solid #786d55;border-radius:6px;background:#151c18;color:#f5f0e4;font:inherit}
+.lk-profile-edit input[type=file]{font-size:.85rem}
+.lk-profile-save{margin-top:14px;padding:11px 18px;border:0;border-radius:6px;background:#a8843f;color:#171b16;font:inherit;font-weight:700;cursor:pointer}
+.lk-profile-save:disabled{opacity:.6;cursor:wait}
+.lk-profile-message{min-height:1.2em;margin:10px 0 0;font-size:.9rem}
+@media(max-width:560px){.lk-user-card{align-items:flex-start;gap:12px}.lk-profile-avatar{width:68px;height:68px;flex-basis:68px}}
